@@ -10,7 +10,7 @@ export default function EngineSlider({
   defaultValue,
   getValue,
 }: {
-  title: string;
+  title?: string;
   min: number;
   max: number;
   step: number;

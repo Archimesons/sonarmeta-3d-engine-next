@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
 import * as THREE from "three";
@@ -15,9 +15,29 @@ import { STLLoader } from "three/examples/jsm/loaders/STLLoader";
 
 import EngineIcon from "@/components/icon/EngineIcon";
 
+import { onCanvasResize, render, screenShot, toggleFullScreen } from "@/utils/core";
 import { getModelFromLoader } from "@/utils/loader";
+import { generateLineSegments, removeLineSegments } from "@/utils/wireframe";
 
-export default function Engine({ path, fov, near, far }: { path: string; fov: number; near: number; far: number }) {
+export default function Engine({
+  path,
+  auxiliaryFlag,
+  fov,
+  near,
+  far,
+  wireframeFlag,
+  wireframeOpacity,
+  wireframeColor,
+}: {
+  path: string;
+  auxiliaryFlag: boolean;
+  fov: number;
+  near: number;
+  far: number;
+  wireframeFlag: boolean;
+  wireframeOpacity: number;
+  wireframeColor: string;
+}) {
   const [progress, setProgress] = useState<number>(0);
   const [itemsLoaded, setItemsLoaded] = useState<number>(0);
   const [itemsTotal, setItemsTotal] = useState<number>(1);
@@ -29,18 +49,94 @@ export default function Engine({ path, fov, near, far }: { path: string; fov: nu
   const scene = useRef<THREE.Scene | null>(null);
   const renderer = useRef<THREE.WebGLRenderer | null>(null);
   const camera = useRef<THREE.PerspectiveCamera | null>(null);
+  const model = useRef<THREE.Group | null>(null);
+  const modelGeometryList = useRef<THREE.BufferGeometry[]>([]);
   const orbitControls = useRef<OrbitControls | null>(null);
   const axesHelper = useRef<THREE.AxesHelper | null>(null);
   const gridHelper = useRef<THREE.GridHelper | null>(null);
   const ambientLight = useRef<THREE.AmbientLight | null>(null);
 
-  const animate = useCallback(() => {
-    orbitControls.current?.update();
-    render();
-    requestAnimationFrame(animate);
+  // Mounted
+  useEffect(() => {
+    init();
+    window.addEventListener("resize", () =>
+      onCanvasResize({ htmlEleRef: htmlEleRef.current, camera: camera.current, renderer: renderer.current })
+    );
+
+    const htmlEleCopy = htmlEleRef.current;
+    return () => {
+      if (renderer.current) htmlEleCopy?.removeChild(renderer.current.domElement);
+    };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const init = useCallback(() => {
+  // Auxiliary watcher
+  useEffect(() => {
+    if (auxiliaryFlag) {
+      gridHelper.current = new THREE.GridHelper(11, 11);
+      axesHelper.current = new THREE.AxesHelper(5.5);
+
+      scene.current?.add(gridHelper.current, axesHelper.current);
+    } else {
+      if (gridHelper.current) scene.current?.remove(gridHelper.current);
+      if (axesHelper.current) scene.current?.remove(axesHelper.current);
+
+      gridHelper.current = axesHelper.current = null;
+    }
+  }, [auxiliaryFlag]);
+
+  // Camera watcher
+  useEffect(() => {
+    if (!camera.current) return;
+
+    camera.current.fov = fov;
+    camera.current.near = near;
+    camera.current.far = far;
+    camera.current.updateProjectionMatrix();
+  }, [fov, near, far]);
+
+  // Wireframe switch watcher
+  useEffect(() => {
+    model.current?.traverse((node: any) => {
+      if (!node.isMesh) return;
+
+      if (wireframeFlag) {
+        // if (animationList.length) node.material.wireframe = true;
+
+        const geometry = new THREE.WireframeGeometry(node.geometry);
+        modelGeometryList.current.push(geometry);
+
+        generateLineSegments({ wireframeOpacity, wireframeColor, geometry, node });
+      } else {
+        modelGeometryList.current = [];
+        // if (animationList.length) node.material.wireframe = false;
+
+        removeLineSegments({ node });
+      }
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wireframeFlag]);
+
+  // Wireframe wathcer
+  useEffect(() => {
+    if (!wireframeFlag) return;
+
+    let index = 0;
+    model.current?.traverse((node: any) => {
+      if (!node.isMesh) return;
+      index++;
+
+      removeLineSegments({ node });
+      generateLineSegments({ wireframeOpacity, wireframeColor, geometry: modelGeometryList.current[index], node });
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wireframeOpacity, wireframeColor]);
+
+  // Init the whole scene, this function can only be called once
+  function init() {
     if (!htmlEleRef.current) return;
 
     // Scene
@@ -52,10 +148,6 @@ export default function Engine({ path, fov, near, far }: { path: string; fov: nu
     renderer.current.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.current.setSize(htmlEleRef.current.clientWidth, htmlEleRef.current.clientHeight);
     htmlEleRef.current.appendChild(renderer.current.domElement);
-
-    // Auxiliary
-    gridHelper.current = new THREE.GridHelper(11, 11);
-    axesHelper.current = new THREE.AxesHelper(5.5);
 
     // Camera
     const aspect = htmlEleRef.current.clientWidth / htmlEleRef.current.clientHeight;
@@ -88,70 +180,20 @@ export default function Engine({ path, fov, near, far }: { path: string; fov: nu
     // Loaders
     const loader = new GLTFLoader(manager);
     loader.load(path, (res) => {
-      const model = getModelFromLoader(res);
-      scene.current?.add(model);
+      const m = getModelFromLoader(res);
+      model.current = m;
+      scene.current?.add(m);
     });
 
     animate();
-  }, [animate, far, fov, near, path]);
-
-  function render() {
-    if (!scene.current || !camera.current) return;
-
-    renderer.current?.render(scene.current, camera.current);
-    // composer.current?.render();
   }
 
-  function screenShot() {
-    if (!renderer.current) return;
-
-    render();
-
-    const imgData = renderer.current.domElement.toDataURL();
-    const link = document.createElement("a");
-
-    document.body.appendChild(link);
-    link.download = "screenshot";
-    link.href = imgData;
-    link.click();
-    document.body.removeChild(link);
+  // Animate the scene as a loop
+  function animate() {
+    orbitControls.current?.update();
+    render({ scene: scene.current, camera: camera.current, renderer: renderer.current });
+    requestAnimationFrame(animate);
   }
-
-  function toggleFullScreen() {
-    if (!document.fullscreenElement) htmlEleRef.current?.requestFullscreen();
-    else if (document.exitFullscreen) document.exitFullscreen();
-  }
-
-  function onCanvasResize() {
-    if (!htmlEleRef.current || !camera.current) return;
-
-    camera.current.aspect = htmlEleRef.current.clientWidth / htmlEleRef.current.clientHeight;
-    camera.current.updateProjectionMatrix();
-
-    renderer.current?.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.current?.setSize(htmlEleRef.current.clientWidth, htmlEleRef.current.clientHeight);
-  }
-
-  // Mounted
-  useEffect(() => {
-    init();
-    window.addEventListener("resize", onCanvasResize);
-
-    const htmlEleCopy = htmlEleRef.current;
-    return () => {
-      if (renderer.current) htmlEleCopy?.removeChild(renderer.current.domElement);
-    };
-  }, [init]);
-
-  // Camera watcher
-  useEffect(() => {
-    if (!camera.current) return;
-
-    camera.current.fov = fov;
-    camera.current.near = near;
-    camera.current.far = far;
-    camera.current.updateProjectionMatrix();
-  }, [fov, near, far]);
 
   return (
     <div className="relative w-full h-full cursor-grab active:cursor-grabbing" ref={htmlEleRef}>
@@ -181,8 +223,21 @@ export default function Engine({ path, fov, near, far }: { path: string; fov: nu
             handleClick={() => setHelperFlag((prev) => !prev)}
             size={12}
           />
-          <EngineIcon iconUrl="/icon/camera.svg" tip="Photo" handleClick={screenShot} size={20} />
-          <EngineIcon iconUrl="/icon/arrow-expand.svg" tip="Full(F)" handleClick={toggleFullScreen} size={18} />
+          <EngineIcon
+            iconUrl="/icon/camera.svg"
+            tip="Photo"
+            handleClick={() => {
+              render({ scene: scene.current, camera: camera.current, renderer: renderer.current });
+              screenShot({ renderer: renderer.current });
+            }}
+            size={20}
+          />
+          <EngineIcon
+            iconUrl="/icon/arrow-expand.svg"
+            tip="Full(F)"
+            handleClick={() => toggleFullScreen({ htmlEleRef: htmlEleRef.current })}
+            size={18}
+          />
         </div>
       )}
 

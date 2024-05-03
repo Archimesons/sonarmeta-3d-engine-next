@@ -10,16 +10,20 @@ export default function EnginePage() {
   const [sidebarFlag, setSidebarFlag] = useState<string>("BASIC");
 
   const [path, setPath] = useState<string>(
-    "https://sonarmeta.oss-cn-shenzhen.aliyuncs.com/public-assets/preloaded-model/phoenix_bird.glb"
+    "https://sonarmeta.oss-cn-shenzhen.aliyuncs.com/public-assets/test-models/SK_Cartoon_Female_059/SK_Cartoon_Female_059.gltf"
   );
   const [rotateModelFlag, setRotateModelFlag] = useState<{ axis: "X" | "Y" | "Z"; side: 0 | 1; flag: boolean }>({
     axis: "X",
     side: 0,
     flag: false,
   });
+  const [auxiliaryFlag, setAuxiliaryFlag] = useState<boolean>(false);
   const [fov, setFov] = useState<number>(45);
   const [near, setNear] = useState<number>(0.005);
   const [far, setFar] = useState<number>(1000);
+  const [wireframeFlag, setWireframeFlag] = useState<boolean>(false);
+  const [wireframeOpacity, setWireframeOpacity] = useState<number>(1);
+  const [wireframeColor, setWireframeColor] = useState<string>("#000000");
 
   return (
     <>
@@ -29,6 +33,16 @@ export default function EnginePage() {
         <div className="flex-[0_0_340px] flex flex-col overflow-auto overscroll-contain h-full bg-zinc-800 py-4 gap-4">
           {sidebarFlag === "BASIC" && (
             <EngineBasicSidebar
+              // Default values
+              auxiliaryFlag={auxiliaryFlag}
+              fov={fov}
+              near={near}
+              far={far}
+              wireframeFlag={wireframeFlag}
+              wireframeOpacity={wireframeOpacity}
+              wireframeColor={wireframeColor}
+              // Getter functions
+              getAuxiliaryFlag={(flag) => setAuxiliaryFlag(flag)}
               getRotateStatus={(axis, side) =>
                 setRotateModelFlag(({ flag }) => {
                   return { axis, side, flag: !flag };
@@ -37,11 +51,23 @@ export default function EnginePage() {
               getFieldOfView={(fov) => setFov(fov)}
               getNearClippingDistance={(near) => setNear(near)}
               getFarClippingDistance={(far) => setFar(far)}
+              getWireframeFlag={(flag) => setWireframeFlag(flag)}
+              getWireframeOpacity={(opacity) => setWireframeOpacity(opacity)}
+              getWireframeColor={(color) => setWireframeColor(color)}
             />
           )}
         </div>
 
-        <Engine path={path} fov={fov} near={near} far={far} />
+        <Engine
+          path={path}
+          auxiliaryFlag={auxiliaryFlag}
+          fov={fov}
+          near={near}
+          far={far}
+          wireframeFlag={wireframeFlag}
+          wireframeOpacity={wireframeOpacity}
+          wireframeColor={wireframeColor}
+        />
       </div>
     </>
   );
