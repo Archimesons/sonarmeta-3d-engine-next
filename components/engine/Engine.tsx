@@ -20,6 +20,8 @@ import { getModelFromLoader } from "@/utils/loader";
 import { rotateModelAnimate } from "@/utils/rotation";
 import { generateLineSegments, removeLineSegments } from "@/utils/wireframe";
 
+import { switchBackgroundChoice } from "@/utils/background";
+
 export default function Engine({
   path,
   auxiliaryFlag,
@@ -30,7 +32,13 @@ export default function Engine({
   wireframeFlag,
   wireframeOpacity,
   wireframeColor,
+  backgroundFlag,
+  backgroundChoice,
   backgroundColor,
+  backgroundImage,
+  backgroundEnv,
+  backgroundBlur,
+  backgroundIntensity,
 }: {
   path: string;
   auxiliaryFlag: boolean;
@@ -41,7 +49,13 @@ export default function Engine({
   wireframeFlag: boolean;
   wireframeOpacity: number;
   wireframeColor: string;
+  backgroundFlag: boolean;
+  backgroundChoice: "C" | "I" | "E";
   backgroundColor: string;
+  backgroundImage: number;
+  backgroundEnv: number;
+  backgroundBlur: number;
+  backgroundIntensity: number;
 }) {
   const [progress, setProgress] = useState<number>(0);
   const [itemsLoaded, setItemsLoaded] = useState<number>(0);
@@ -60,6 +74,7 @@ export default function Engine({
   const axesHelper = useRef<THREE.AxesHelper | null>(null);
   const gridHelper = useRef<THREE.GridHelper | null>(null);
   const ambientLight = useRef<THREE.AmbientLight | null>(null);
+  const pmremGenerator = useRef<THREE.PMREMGenerator | null>(null);
 
   // Mounted
   useEffect(() => {
@@ -107,7 +122,7 @@ export default function Engine({
     camera.current.updateProjectionMatrix();
   }, [fov, near, far]);
 
-  // Wireframe switch watcher
+  // Wireframe flag watcher
   useEffect(() => {
     model.current?.traverse((node: any) => {
       if (!node.isMesh) return;
@@ -130,7 +145,7 @@ export default function Engine({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wireframeFlag]);
 
-  // Wireframe wathcer
+  // Wireframe attributes wathcer
   useEffect(() => {
     if (!wireframeFlag) return;
 
@@ -146,12 +161,29 @@ export default function Engine({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wireframeOpacity, wireframeColor]);
 
-  // Background watcher
+  // Background switch watcher
   useEffect(() => {
-    if (!scene.current) return;
+    switchBackgroundChoice({
+      backgroundFlag,
+      backgroundChoice,
+      backgroundColor,
+      scene: scene.current,
+      renderer: renderer.current,
+      pmremGenerator: pmremGenerator.current,
+      bgImgIndex: backgroundImage,
+      bgEnvIndex: backgroundEnv,
+    });
+  }, [backgroundFlag, backgroundChoice, backgroundColor, backgroundImage, backgroundEnv]);
 
-    scene.current.background = new THREE.Color(backgroundColor);
-  }, [backgroundColor]);
+  // Background attributes watcher
+  useEffect(() => {
+    if (!backgroundFlag || !scene.current) return;
+
+    if (backgroundChoice === "E") scene.current.backgroundBlurriness = backgroundBlur;
+    if (["I", "E"].includes(backgroundChoice)) scene.current.backgroundIntensity = backgroundIntensity;
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [backgroundBlur, backgroundIntensity]);
 
   // Init the whole scene, this function can only be called once
   function init() {
@@ -181,6 +213,10 @@ export default function Engine({
 
     // Ambient light
     ambientLight.current = new THREE.AmbientLight();
+
+    // Environment
+    pmremGenerator.current = new THREE.PMREMGenerator(renderer.current);
+    pmremGenerator.current.compileEquirectangularShader();
 
     // Loading manager
     const manager = new THREE.LoadingManager();

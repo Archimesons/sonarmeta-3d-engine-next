@@ -24,8 +24,13 @@ export default function EnginePage() {
   const [wireframeFlag, setWireframeFlag] = useState<boolean>(false);
   const [wireframeOpacity, setWireframeOpacity] = useState<number>(1);
   const [wireframeColor, setWireframeColor] = useState<string>("#000000");
+  const [backgroundFlag, setBackgroundFlag] = useState<boolean>(true);
   const [backgroundChoice, setBackgroundChoice] = useState<"C" | "I" | "E">("C");
   const [backgroundColor, setBackgroundColor] = useState<string>("#565656");
+  const [backgroundImage, setBackgroundImage] = useState<number>(0);
+  const [backgroundEnv, setBackgroundEnv] = useState<number>(0);
+  const [backgroundBlur, setBackgroundBlur] = useState<number>(1);
+  const [backgroundIntensity, setBackgroundIntensity] = useState<number>(1);
 
   return (
     <>
@@ -43,8 +48,13 @@ export default function EnginePage() {
               wireframeFlag={wireframeFlag}
               wireframeOpacity={wireframeOpacity}
               wireframeColor={wireframeColor}
+              backgroundFlag={backgroundFlag}
               backgroundChoice={backgroundChoice}
               backgroundColor={backgroundColor}
+              backgroundImage={backgroundImage}
+              backgroundEnv={backgroundEnv}
+              backgroundBlur={backgroundBlur}
+              backgroundIntensity={backgroundIntensity}
               // Getter functions
               getAuxiliaryFlag={(flag) => setAuxiliaryFlag(flag)}
               getRotateStatus={(axis, side) =>
@@ -58,8 +68,13 @@ export default function EnginePage() {
               getWireframeFlag={(flag) => setWireframeFlag(flag)}
               getWireframeOpacity={(opacity) => setWireframeOpacity(opacity)}
               getWireframeColor={(color) => setWireframeColor(color)}
+              getBackgroundFlag={(flag) => setBackgroundFlag(flag)}
               getBackgroundChoice={(choice) => setBackgroundChoice(choice)}
               getBackgroundColor={(color) => setBackgroundColor(color)}
+              getBackgroundImage={(index) => setBackgroundImage(index)}
+              getBackgroundEnv={(index) => setBackgroundEnv(index)}
+              getBackgroundBlur={(blur) => setBackgroundBlur(blur)}
+              getBackgroundIntensity={(intensity) => setBackgroundIntensity(intensity)}
             />
           )}
         </div>
@@ -74,7 +89,13 @@ export default function EnginePage() {
           wireframeFlag={wireframeFlag}
           wireframeOpacity={wireframeOpacity}
           wireframeColor={wireframeColor}
+          backgroundFlag={backgroundFlag}
+          backgroundChoice={backgroundChoice}
           backgroundColor={backgroundColor}
+          backgroundImage={backgroundImage}
+          backgroundEnv={backgroundEnv}
+          backgroundBlur={backgroundBlur}
+          backgroundIntensity={backgroundIntensity}
         />
       </div>
     </>

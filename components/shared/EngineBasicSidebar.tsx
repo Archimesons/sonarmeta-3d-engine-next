@@ -1,9 +1,13 @@
 "use client";
 
+import Image from "next/image";
+
 import SingleIcon from "@/components/icon/SingleIcon";
 import EngineSlider from "@/components/ui/EngineSlider";
 import EngineColorInput from "@/components/ui/EngineColorInput";
-import EngineSwitch from "../ui/EngineSwitch";
+import EngineSwitch from "@/components/ui/EngineSwitch";
+
+import { preloadedBackgroundImages, preloadedEnvImages } from "@/constant";
 
 export default function EngineBasicSidebar({
   auxiliaryFlag,
@@ -13,8 +17,13 @@ export default function EngineBasicSidebar({
   wireframeFlag,
   wireframeOpacity,
   wireframeColor,
+  backgroundFlag,
   backgroundChoice,
   backgroundColor,
+  backgroundImage,
+  backgroundEnv,
+  backgroundBlur,
+  backgroundIntensity,
   getAuxiliaryFlag,
   getRotateStatus,
   getFieldOfView,
@@ -23,8 +32,13 @@ export default function EngineBasicSidebar({
   getWireframeFlag,
   getWireframeOpacity,
   getWireframeColor,
+  getBackgroundFlag,
   getBackgroundColor,
   getBackgroundChoice,
+  getBackgroundImage,
+  getBackgroundEnv,
+  getBackgroundBlur,
+  getBackgroundIntensity,
 }: {
   auxiliaryFlag: boolean;
   fov: number;
@@ -33,8 +47,13 @@ export default function EngineBasicSidebar({
   wireframeFlag: boolean;
   wireframeOpacity: number;
   wireframeColor: string;
+  backgroundFlag: boolean;
   backgroundChoice: "C" | "I" | "E";
   backgroundColor: string;
+  backgroundImage: number;
+  backgroundEnv: number;
+  backgroundBlur: number;
+  backgroundIntensity: number;
   getAuxiliaryFlag: (flag: boolean) => void;
   getRotateStatus: (axis: "X" | "Y" | "Z", side: 0 | 1) => void;
   getFieldOfView: (fov: number) => void;
@@ -43,8 +62,13 @@ export default function EngineBasicSidebar({
   getWireframeFlag: (flag: boolean) => void;
   getWireframeOpacity: (opacity: number) => void;
   getWireframeColor: (color: string) => void;
+  getBackgroundFlag: (flag: boolean) => void;
   getBackgroundColor: (color: string) => void;
   getBackgroundChoice: (choice: "C" | "I" | "E") => void;
+  getBackgroundImage: (index: number) => void;
+  getBackgroundEnv: (index: number) => void;
+  getBackgroundBlur: (blur: number) => void;
+  getBackgroundIntensity: (intensity: number) => void;
 }) {
   function handleRotate(id: 1 | 2 | 3, side: 0 | 1) {
     if (id === 1) getRotateStatus("X", side);
@@ -92,7 +116,7 @@ export default function EngineBasicSidebar({
         <p className="text-zinc-50 text-sm">摄像机设置</p>
 
         <EngineSlider
-          title="视场角"
+          title="视野角"
           min={1}
           max={179}
           step={0.001}
@@ -150,6 +174,14 @@ export default function EngineBasicSidebar({
       <div className="flex flex-col gap-4 px-4">
         <p className="text-zinc-50 text-sm">背景设置</p>
 
+        <EngineSwitch
+          id="backgroundFlag"
+          type="checkbox"
+          title="启用背景"
+          checked={backgroundFlag}
+          getFlag={(flag) => getBackgroundFlag(flag)}
+        />
+
         <div className="flex justify-between items-center">
           <EngineSwitch
             id="backgroundRadioColor"
@@ -183,6 +215,76 @@ export default function EngineBasicSidebar({
             title="背景颜色"
             defaultValue={backgroundColor}
             getColor={(color) => getBackgroundColor(color)}
+          />
+        )}
+
+        {backgroundChoice === "I" && (
+          <div className="flex flex-col text-white overflow-hidden gap-2">
+            {preloadedBackgroundImages.map((img) => (
+              <div
+                key={img.id}
+                className={`flex items-center bg-[#283236] hover:bg-[#404856]  ${
+                  backgroundImage === img.id ? "bg-[#404856]" : ""
+                } duration-200 rounded cursor-pointer p-3 gap-3`}
+                onClick={() => getBackgroundImage(img.id)}
+              >
+                <Image
+                  className="rounded-sm"
+                  src={img.path}
+                  alt="preloaded-background-image"
+                  width={64}
+                  height={36}
+                  priority
+                />
+                <span className="text-sm text-zinc-400">{img.name}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {backgroundChoice === "E" && (
+          <div className="flex flex-col text-white overflow-hidden gap-2">
+            {preloadedEnvImages.map((env) => (
+              <div
+                key={env.id}
+                className={`flex items-center bg-[#283236] hover:bg-[#404856] ${
+                  backgroundEnv === env.id ? "bg-[#404856]" : ""
+                } duration-200 rounded cursor-pointer p-3 gap-3`}
+                onClick={() => getBackgroundEnv(env.id)}
+              >
+                <Image
+                  className="rounded-sm"
+                  src={env.preview}
+                  alt="preloaded-env-image"
+                  width={64}
+                  height={36}
+                  priority
+                />
+                <span className="text-sm text-zinc-400">{env.name}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {backgroundChoice === "E" && (
+          <EngineSlider
+            title="背景虚化"
+            min={0}
+            max={1}
+            step={0.001}
+            defaultValue={backgroundBlur}
+            getValue={(val) => getBackgroundBlur(val)}
+          />
+        )}
+
+        {["I", "E"].includes(backgroundChoice) && (
+          <EngineSlider
+            title="背景亮度"
+            min={0}
+            max={1}
+            step={0.001}
+            defaultValue={backgroundIntensity}
+            getValue={(val) => getBackgroundIntensity(val)}
           />
         )}
       </div>

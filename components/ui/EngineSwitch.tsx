@@ -26,7 +26,7 @@ export default function EngineSwitch({
 
   return (
     <div className="flex items-center text-sm gap-2">
-      <input id={id} type={type} name={name} checked={checked} onChange={handleChange} />
+      <input className="cursor-pointer" id={id} type={type} name={name} checked={checked} onChange={handleChange} />
 
       <label className="text-zinc-400" htmlFor={id}>
         {title}
