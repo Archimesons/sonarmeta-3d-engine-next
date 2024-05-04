@@ -12,7 +12,7 @@ export default function EnginePage() {
   const [path, setPath] = useState<string>(
     "https://sonarmeta.oss-cn-shenzhen.aliyuncs.com/public-assets/test-models/SK_Cartoon_Female_059/SK_Cartoon_Female_059.gltf"
   );
-  const [rotateModelFlag, setRotateModelFlag] = useState<{ axis: "X" | "Y" | "Z"; side: 0 | 1; flag: boolean }>({
+  const [rotateStatus, setRotateStatus] = useState<{ axis: "X" | "Y" | "Z"; side: 0 | 1; flag: boolean }>({
     axis: "X",
     side: 0,
     flag: false,
@@ -48,7 +48,7 @@ export default function EnginePage() {
               // Getter functions
               getAuxiliaryFlag={(flag) => setAuxiliaryFlag(flag)}
               getRotateStatus={(axis, side) =>
-                setRotateModelFlag(({ flag }) => {
+                setRotateStatus(({ flag }) => {
                   return { axis, side, flag: !flag };
                 })
               }
@@ -67,6 +67,7 @@ export default function EnginePage() {
         <Engine
           path={path}
           auxiliaryFlag={auxiliaryFlag}
+          rotateStatus={rotateStatus}
           fov={fov}
           near={near}
           far={far}

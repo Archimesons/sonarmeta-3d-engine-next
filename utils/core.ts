@@ -1,5 +1,6 @@
 import * as THREE from "three";
 
+// Render by renderer or composer
 export function render({
   scene,
   camera,
@@ -15,6 +16,7 @@ export function render({
   // composer.render();
 }
 
+// Get a screen shot
 export function screenShot({ renderer }: { renderer: THREE.WebGLRenderer | null }) {
   if (!renderer) return;
 

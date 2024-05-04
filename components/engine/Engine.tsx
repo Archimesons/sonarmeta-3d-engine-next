@@ -15,13 +15,15 @@ import { STLLoader } from "three/examples/jsm/loaders/STLLoader";
 
 import EngineIcon from "@/components/icon/EngineIcon";
 
-import { onCanvasResize, render, screenShot, toggleFullScreen } from "@/utils/core";
+import { render, screenShot, toggleFullScreen, onCanvasResize } from "@/utils/core";
 import { getModelFromLoader } from "@/utils/loader";
+import { rotateModelAnimate } from "@/utils/rotation";
 import { generateLineSegments, removeLineSegments } from "@/utils/wireframe";
 
 export default function Engine({
   path,
   auxiliaryFlag,
+  rotateStatus,
   fov,
   near,
   far,
@@ -32,6 +34,7 @@ export default function Engine({
 }: {
   path: string;
   auxiliaryFlag: boolean;
+  rotateStatus: { axis: "X" | "Y" | "Z"; side: 0 | 1; flag: boolean };
   fov: number;
   near: number;
   far: number;
@@ -87,6 +90,12 @@ export default function Engine({
       gridHelper.current = axesHelper.current = null;
     }
   }, [auxiliaryFlag]);
+
+  // Rotate status watcher
+  useEffect(() => {
+    if (!model.current) return;
+    rotateModelAnimate({ model: model.current, axis: rotateStatus.axis, side: rotateStatus.side, angle: 0 });
+  }, [rotateStatus]);
 
   // Camera watcher
   useEffect(() => {
