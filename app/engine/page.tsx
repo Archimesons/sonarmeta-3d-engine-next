@@ -29,7 +29,7 @@ export default function EnginePage() {
   const [backgroundColor, setBackgroundColor] = useState<string>("#565656");
   const [backgroundImage, setBackgroundImage] = useState<number>(0);
   const [backgroundEnv, setBackgroundEnv] = useState<number>(0);
-  const [backgroundBlur, setBackgroundBlur] = useState<number>(1);
+  const [backgroundBlur, setBackgroundBlur] = useState<number>(0.5);
   const [backgroundIntensity, setBackgroundIntensity] = useState<number>(1);
 
   return (
@@ -37,7 +37,7 @@ export default function EnginePage() {
       <EngineTopbar />
 
       <div className="flex h-[calc(100vh-55px)]">
-        <div className="flex-[0_0_340px] flex flex-col overflow-auto overscroll-contain h-full bg-zinc-800 py-4 gap-4">
+        <div className="flex-[0_0_340px] flex flex-col overflow-auto overscroll-contain h-full bg-zinc-800 pt-4 py-12 gap-4">
           {sidebarFlag === "BASIC" && (
             <EngineBasicSidebar
               // Default values

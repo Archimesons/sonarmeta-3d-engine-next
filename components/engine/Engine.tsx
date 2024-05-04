@@ -192,6 +192,8 @@ export default function Engine({
     // Scene
     scene.current = new THREE.Scene();
     scene.current.background = new THREE.Color(backgroundColor);
+    scene.current.backgroundBlurriness = backgroundBlur;
+    scene.current.backgroundIntensity = backgroundIntensity;
 
     // Renderer
     renderer.current = new THREE.WebGLRenderer({ antialias: true });
