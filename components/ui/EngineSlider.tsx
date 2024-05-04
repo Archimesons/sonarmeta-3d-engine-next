@@ -33,10 +33,10 @@ export default function EngineSlider({
   return (
     <div className="text-sm">
       {title && <label className="text-zinc-400">{title}</label>}
-      
+
       <div className="flex justify-between items-center gap-2">
         <input
-          className="w-full appearance-none h-2 rounded bg-[#323640] outline-none slider-thumb"
+          className="w-full h-2 rounded bg-[#323640] appearance-none outline-none slider-thumb"
           type="range"
           min={min}
           max={max}
@@ -47,7 +47,7 @@ export default function EngineSlider({
 
         <input
           className="text-center text-white w-[55px] h-[25px] rounded bg-[#323640] hover:bg-[#404856] duration-200"
-          type="text"
+          type="number"
           value={value}
           onChange={handleChange}
         />

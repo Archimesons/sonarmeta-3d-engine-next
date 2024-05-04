@@ -28,6 +28,7 @@ export default function Engine({
   wireframeFlag,
   wireframeOpacity,
   wireframeColor,
+  backgroundColor,
 }: {
   path: string;
   auxiliaryFlag: boolean;
@@ -37,6 +38,7 @@ export default function Engine({
   wireframeFlag: boolean;
   wireframeOpacity: number;
   wireframeColor: string;
+  backgroundColor: string;
 }) {
   const [progress, setProgress] = useState<number>(0);
   const [itemsLoaded, setItemsLoaded] = useState<number>(0);
@@ -135,13 +137,20 @@ export default function Engine({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wireframeOpacity, wireframeColor]);
 
+  // Background watcher
+  useEffect(() => {
+    if (!scene.current) return;
+
+    scene.current.background = new THREE.Color(backgroundColor);
+  }, [backgroundColor]);
+
   // Init the whole scene, this function can only be called once
   function init() {
     if (!htmlEleRef.current) return;
 
     // Scene
     scene.current = new THREE.Scene();
-    scene.current.background = new THREE.Color(0x565656);
+    scene.current.background = new THREE.Color(backgroundColor);
 
     // Renderer
     renderer.current = new THREE.WebGLRenderer({ antialias: true });

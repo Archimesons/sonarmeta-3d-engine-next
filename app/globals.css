@@ -10,6 +10,15 @@
   scroll-behavior: smooth;
 }
 
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 @layer utilities {
   .slider-thumb::-webkit-slider-thumb {
     @apply appearance-none w-5 h-5 rounded-[50%] bg-[#486072] cursor-pointer;

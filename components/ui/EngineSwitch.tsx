@@ -1,31 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { ChangeEvent } from "react";
 
 export default function EngineSwitch({
   id,
+  type,
+  name,
   title,
-  defaultChecked,
+  checked,
   getFlag,
+  getChoice,
 }: {
   id: string;
+  type: "checkbox" | "radio";
+  name?: string;
   title: string;
-  defaultChecked: boolean;
-  getFlag: (flag: boolean) => void;
+  checked: boolean;
+  getFlag?: (flag: boolean) => void;
+  getChoice?: () => void;
 }) {
-  const [checked, setChecked] = useState(defaultChecked);
+  function handleChange(e: ChangeEvent<HTMLInputElement>) {
+    getFlag?.(e.target.checked);
+    getChoice?.();
+  }
 
   return (
     <div className="flex items-center text-sm gap-2">
-      <input
-        id={id}
-        type="checkbox"
-        checked={checked}
-        onChange={(e) => {
-          setChecked(e.target.checked);
-          getFlag(e.target.checked);
-        }}
-      />
+      <input id={id} type={type} name={name} checked={checked} onChange={handleChange} />
 
       <label className="text-zinc-400" htmlFor={id}>
         {title}

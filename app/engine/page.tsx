@@ -24,6 +24,8 @@ export default function EnginePage() {
   const [wireframeFlag, setWireframeFlag] = useState<boolean>(false);
   const [wireframeOpacity, setWireframeOpacity] = useState<number>(1);
   const [wireframeColor, setWireframeColor] = useState<string>("#000000");
+  const [backgroundChoice, setBackgroundChoice] = useState<"C" | "I" | "E">("C");
+  const [backgroundColor, setBackgroundColor] = useState<string>("#565656");
 
   return (
     <>
@@ -41,6 +43,8 @@ export default function EnginePage() {
               wireframeFlag={wireframeFlag}
               wireframeOpacity={wireframeOpacity}
               wireframeColor={wireframeColor}
+              backgroundChoice={backgroundChoice}
+              backgroundColor={backgroundColor}
               // Getter functions
               getAuxiliaryFlag={(flag) => setAuxiliaryFlag(flag)}
               getRotateStatus={(axis, side) =>
@@ -54,6 +58,8 @@ export default function EnginePage() {
               getWireframeFlag={(flag) => setWireframeFlag(flag)}
               getWireframeOpacity={(opacity) => setWireframeOpacity(opacity)}
               getWireframeColor={(color) => setWireframeColor(color)}
+              getBackgroundChoice={(choice) => setBackgroundChoice(choice)}
+              getBackgroundColor={(color) => setBackgroundColor(color)}
             />
           )}
         </div>
@@ -67,6 +73,7 @@ export default function EnginePage() {
           wireframeFlag={wireframeFlag}
           wireframeOpacity={wireframeOpacity}
           wireframeColor={wireframeColor}
+          backgroundColor={backgroundColor}
         />
       </div>
     </>

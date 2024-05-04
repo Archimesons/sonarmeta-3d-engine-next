@@ -13,6 +13,8 @@ export default function EngineBasicSidebar({
   wireframeFlag,
   wireframeOpacity,
   wireframeColor,
+  backgroundChoice,
+  backgroundColor,
   getAuxiliaryFlag,
   getRotateStatus,
   getFieldOfView,
@@ -21,6 +23,8 @@ export default function EngineBasicSidebar({
   getWireframeFlag,
   getWireframeOpacity,
   getWireframeColor,
+  getBackgroundColor,
+  getBackgroundChoice,
 }: {
   auxiliaryFlag: boolean;
   fov: number;
@@ -29,6 +33,8 @@ export default function EngineBasicSidebar({
   wireframeFlag: boolean;
   wireframeOpacity: number;
   wireframeColor: string;
+  backgroundChoice: "C" | "I" | "E";
+  backgroundColor: string;
   getAuxiliaryFlag: (flag: boolean) => void;
   getRotateStatus: (axis: "X" | "Y" | "Z", side: 0 | 1) => void;
   getFieldOfView: (fov: number) => void;
@@ -37,6 +43,8 @@ export default function EngineBasicSidebar({
   getWireframeFlag: (flag: boolean) => void;
   getWireframeOpacity: (opacity: number) => void;
   getWireframeColor: (color: string) => void;
+  getBackgroundColor: (color: string) => void;
+  getBackgroundChoice: (choice: "C" | "I" | "E") => void;
 }) {
   function handleRotate(id: 1 | 2 | 3, side: 0 | 1) {
     if (id === 1) getRotateStatus("X", side);
@@ -51,8 +59,9 @@ export default function EngineBasicSidebar({
 
         <EngineSwitch
           id="auxiliaryFlag"
+          type="checkbox"
           title="启用辅助线"
-          defaultChecked={auxiliaryFlag}
+          checked={auxiliaryFlag}
           getFlag={(flag) => getAuxiliaryFlag(flag)}
         />
 
@@ -115,8 +124,9 @@ export default function EngineBasicSidebar({
 
         <EngineSwitch
           id="wireframeFlag"
+          type="checkbox"
           title="启用线框"
-          defaultChecked={wireframeFlag}
+          checked={wireframeFlag}
           getFlag={(flag) => getWireframeFlag(flag)}
         />
         <EngineSlider
@@ -133,6 +143,48 @@ export default function EngineBasicSidebar({
           defaultValue={wireframeColor}
           getColor={(color) => getWireframeColor(color)}
         />
+      </div>
+
+      <hr className="border-zinc-500" />
+
+      <div className="flex flex-col gap-4 px-4">
+        <p className="text-zinc-50 text-sm">背景设置</p>
+
+        <div className="flex justify-between items-center">
+          <EngineSwitch
+            id="backgroundRadioColor"
+            type="radio"
+            name="backgroundRadio"
+            title="启用颜色"
+            checked={backgroundChoice === "C"}
+            getChoice={() => getBackgroundChoice("C")}
+          />
+          <EngineSwitch
+            id="backgroundRadioImage"
+            type="radio"
+            name="backgroundRadio"
+            title="启用图片"
+            checked={backgroundChoice === "I"}
+            getChoice={() => getBackgroundChoice("I")}
+          />
+          <EngineSwitch
+            id="backgroundRadioEnv"
+            type="radio"
+            name="backgroundRadio"
+            title="启用环境"
+            checked={backgroundChoice === "E"}
+            getChoice={() => getBackgroundChoice("E")}
+          />
+        </div>
+
+        {backgroundChoice === "C" && (
+          <EngineColorInput
+            id="backgroundColor"
+            title="背景颜色"
+            defaultValue={backgroundColor}
+            getColor={(color) => getBackgroundColor(color)}
+          />
+        )}
       </div>
     </>
   );
