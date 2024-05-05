@@ -79,7 +79,7 @@ export default function EngineBasicSidebar({
   return (
     <>
       <div className="flex flex-col gap-4 px-4">
-        <p className="text-zinc-50 text-sm">基础设置</p>
+        <p className="text-zinc-50 text-sm">通用设置</p>
 
         <EngineSwitch
           id="auxiliaryFlag"

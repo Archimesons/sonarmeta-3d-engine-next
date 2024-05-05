@@ -101,3 +101,13 @@ export const preloadedMatcapImages = [
 
 export const backgroundTransparentImage =
   "https://sonarmeta.oss-cn-shenzhen.aliyuncs.com/public-assets/transparent.jpg";
+
+export const sidebarFlagImage = [
+  { flag: "B", path: "/icon/gear.svg", size: 26 },
+  { flag: "L", path: "/icon/light.svg", size: 16 },
+  { flag: "T", path: "/icon/image.svg", size: 24 },
+  { flag: "P", path: "/icon/camera-viewfinder.svg", size: 24 },
+  { flag: "L", path: "/icon/location.svg", size: 16 },
+  { flag: "A", path: "/icon/animation.svg", size: 24 },
+  { flag: "V", path: "/icon/glass.svg", size: 32 },
+];

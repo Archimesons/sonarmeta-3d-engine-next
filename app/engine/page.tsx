@@ -1,13 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 
 import Engine from "@/components/engine/Engine";
 import EngineTopbar from "@/components/shared/EngineTopbar";
 import EngineBasicSidebar from "@/components/shared/EngineBasicSidebar";
 
+import { sidebarFlagImage } from "@/constant";
+
 export default function EnginePage() {
-  const [sidebarFlag, setSidebarFlag] = useState<string>("BASIC");
+  const [sidebarFlag, setSidebarFlag] = useState<string>("B");
 
   const [path, setPath] = useState<string>(
     "https://sonarmeta.oss-cn-shenzhen.aliyuncs.com/public-assets/test-models/SK_Cartoon_Female_059/SK_Cartoon_Female_059.gltf"
@@ -37,8 +40,25 @@ export default function EnginePage() {
       <EngineTopbar />
 
       <div className="flex h-[calc(100vh-55px)]">
-        <div className="flex-[0_0_340px] flex flex-col overflow-auto overscroll-contain h-full bg-zinc-800 pt-4 py-12 gap-4">
-          {sidebarFlag === "BASIC" && (
+        <div className="flex-[0_0_336px] flex flex-col overflow-auto overscroll-contain h-full bg-zinc-800 pb-12 gap-4">
+          {/* Sidebar selector */}
+          <div className="flex justify-between items-center">
+            {sidebarFlagImage.map((item) => (
+              <div
+                className={`flex justify-center items-center w-[48px] h-[48px] ${
+                  sidebarFlag === item.flag ? "bg-[#486072]" : "bg-[#283236]"
+                } hover:bg-[#486072] border-b-[1px] ${
+                  item.flag !== "V" ? "border-r-[1px]" : ""
+                } border-zinc-500 duration-200 cursor-pointer`}
+                key={item.flag}
+                onClick={() => setSidebarFlag(item.flag)}
+              >
+                <Image src={item.path} alt="sidebarFlagImage" width={item.size} height={item.size} priority />
+              </div>
+            ))}
+          </div>
+
+          {sidebarFlag === "B" && (
             <EngineBasicSidebar
               // Default values
               auxiliaryFlag={auxiliaryFlag}
