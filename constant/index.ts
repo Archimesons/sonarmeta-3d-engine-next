@@ -1,3 +1,5 @@
+import { LightBarContentType, LightType } from "@/types";
+
 export const preloadedBackgroundImages = [
   {
     id: 0,
@@ -104,10 +106,61 @@ export const backgroundTransparentImage =
 
 export const sidebarFlagImage = [
   { flag: "B", path: "/icon/gear.svg", size: 26 },
-  { flag: "L", path: "/icon/light.svg", size: 16 },
+  { flag: "L", path: "/icon/light.svg", size: 15 },
   { flag: "T", path: "/icon/image.svg", size: 24 },
-  { flag: "P", path: "/icon/camera-viewfinder.svg", size: 24 },
-  { flag: "L", path: "/icon/location.svg", size: 16 },
-  { flag: "A", path: "/icon/animation.svg", size: 24 },
+  { flag: "P", path: "/icon/camera-viewfinder.svg", size: 22 },
+  { flag: "M", path: "/icon/location.svg", size: 16 },
+  { flag: "A", path: "/icon/animation.svg", size: 23 },
   { flag: "V", path: "/icon/glass.svg", size: 32 },
 ];
+
+export const lightBarContent: LightBarContentType[] = [
+  { id: 0, type: "D", name: "平行光" },
+  { id: 1, type: "P", name: "点光" },
+  { id: 2, type: "S", name: "聚光" },
+  { id: 3, type: "H", name: "半球光" },
+  { id: 4, type: "N", name: "禁用" },
+];
+
+export const lightPresets1: LightType = {
+  index: 1,
+  type: "D",
+  name: "平行光",
+  color: "#6CBBFF",
+  intensity: 0.12,
+  visible: true,
+  decay: 0,
+  angle: 0,
+  penumbra: 0,
+  attachedToCamera: false,
+  castShadow: false,
+  shadowBias: 0.2659,
+};
+export const lightPresets2: LightType = {
+  index: 2,
+  type: "P",
+  name: "点光",
+  color: "#FFE0B5",
+  intensity: 1,
+  visible: true,
+  decay: 0.5,
+  angle: 0,
+  penumbra: 0,
+  attachedToCamera: false,
+  castShadow: false,
+  shadowBias: 0.2659,
+};
+export const lightPresets3: LightType = {
+  index: 3,
+  type: "S",
+  name: "聚光",
+  color: "#0C9D41",
+  intensity: 0.8553,
+  visible: true,
+  decay: 0.5,
+  angle: 45,
+  penumbra: 0.5,
+  attachedToCamera: false,
+  castShadow: false,
+  shadowBias: 0.2659,
+};

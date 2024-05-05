@@ -183,30 +183,17 @@ export default function EngineBasicSidebar({
         />
 
         <div className="flex justify-between items-center">
-          <EngineSwitch
-            id="backgroundRadioColor"
-            type="radio"
-            name="backgroundRadio"
-            title="启用颜色"
-            checked={backgroundChoice === "C"}
-            getChoice={() => getBackgroundChoice("C")}
-          />
-          <EngineSwitch
-            id="backgroundRadioImage"
-            type="radio"
-            name="backgroundRadio"
-            title="启用图片"
-            checked={backgroundChoice === "I"}
-            getChoice={() => getBackgroundChoice("I")}
-          />
-          <EngineSwitch
-            id="backgroundRadioEnv"
-            type="radio"
-            name="backgroundRadio"
-            title="启用环境"
-            checked={backgroundChoice === "E"}
-            getChoice={() => getBackgroundChoice("E")}
-          />
+          {["C", "I", "E"].map((choice) => (
+            <EngineSwitch
+              key={choice}
+              id={`backgroundRadio${choice}`}
+              type="radio"
+              name="backgroundRadio"
+              title={choice === "C" ? "启用颜色" : choice === "I" ? "启用图片" : "启用环境"}
+              checked={backgroundChoice === choice}
+              getChoice={() => getBackgroundChoice(choice as "C" | "I" | "E")}
+            />
+          ))}
         </div>
 
         {backgroundChoice === "C" && (
@@ -219,12 +206,12 @@ export default function EngineBasicSidebar({
         )}
 
         {backgroundChoice === "I" && (
-          <div className="flex flex-col text-white overflow-hidden gap-2">
+          <div className="flex flex-col text-white gap-2">
             {preloadedBackgroundImages.map((img) => (
               <div
                 key={img.id}
-                className={`flex items-center bg-[#283236] hover:bg-[#404856]  ${
-                  backgroundImage === img.id ? "bg-[#404856]" : ""
+                className={`flex items-center bg-zinc-700 hover:bg-zinc-600  ${
+                  backgroundImage === img.id ? "bg-zinc-600" : ""
                 } duration-200 rounded cursor-pointer p-3 gap-3`}
                 onClick={() => getBackgroundImage(img.id)}
               >
@@ -243,12 +230,12 @@ export default function EngineBasicSidebar({
         )}
 
         {backgroundChoice === "E" && (
-          <div className="flex flex-col text-white overflow-hidden gap-2">
+          <div className="flex flex-col text-white gap-2">
             {preloadedEnvImages.map((env) => (
               <div
                 key={env.id}
-                className={`flex items-center bg-[#283236] hover:bg-[#404856] ${
-                  backgroundEnv === env.id ? "bg-[#404856]" : ""
+                className={`flex items-center bg-zinc-700 hover:bg-zinc-600 ${
+                  backgroundEnv === env.id ? "bg-zinc-600" : ""
                 } duration-200 rounded cursor-pointer p-3 gap-3`}
                 onClick={() => getBackgroundEnv(env.id)}
               >

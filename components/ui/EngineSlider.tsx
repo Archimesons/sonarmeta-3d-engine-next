@@ -36,7 +36,7 @@ export default function EngineSlider({
 
       <div className="flex justify-between items-center gap-2">
         <input
-          className="w-full h-2 rounded bg-[#323640] appearance-none outline-none slider-thumb"
+          className="w-full h-2 rounded bg-zinc-700 appearance-none outline-none slider-thumb"
           type="range"
           min={min}
           max={max}
@@ -46,7 +46,7 @@ export default function EngineSlider({
         />
 
         <input
-          className="text-center text-white w-[55px] h-[25px] rounded bg-[#323640] hover:bg-[#404856] duration-200"
+          className="text-center text-white w-[55px] h-[25px] rounded bg-zinc-700 hover:bg-zinc-600 duration-200"
           type="number"
           value={value}
           onChange={handleChange}

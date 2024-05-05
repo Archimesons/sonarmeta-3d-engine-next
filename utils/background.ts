@@ -10,8 +10,8 @@ export function switchBackgroundChoice({
   scene,
   renderer,
   pmremGenerator,
-  bgImgIndex,
-  bgEnvIndex,
+  backgroundImageIndex,
+  backgroundEnvIndex,
 }: {
   backgroundFlag: boolean;
   backgroundChoice: "C" | "I" | "E";
@@ -19,10 +19,12 @@ export function switchBackgroundChoice({
   scene: THREE.Scene | null;
   renderer: THREE.WebGLRenderer | null;
   pmremGenerator: THREE.PMREMGenerator | null;
-  bgImgIndex: number;
-  bgEnvIndex: number;
+  backgroundImageIndex: number;
+  backgroundEnvIndex: number;
 }) {
   if (!scene || !renderer) return;
+
+  if ((scene.background as THREE.Texture)?.dispose) (scene.background as THREE.Texture)?.dispose();
 
   // If background is enabled
   if (backgroundFlag) {
@@ -34,15 +36,15 @@ export function switchBackgroundChoice({
 
     // Image mode
     else if (backgroundChoice === "I") {
-      scene.background = new THREE.TextureLoader().load(preloadedBackgroundImages[bgImgIndex].path);
+      scene.background = new THREE.TextureLoader().load(preloadedBackgroundImages[backgroundImageIndex].path);
       // renderer.toneMapping = THREE.NoToneMapping;
     }
 
     // Environment mode
     else if (backgroundChoice === "E") {
-      new EXRLoader().load(preloadedEnvImages[bgEnvIndex].path, (texture) => {
-        const envMap = pmremGenerator?.fromEquirectangular(texture);
-        if (envMap) scene.background = envMap.texture;
+      new EXRLoader().load(preloadedEnvImages[backgroundEnvIndex].path, (texture) => {
+        const target = pmremGenerator?.fromEquirectangular(texture);
+        if (target) scene.background = target.texture;
       });
       // renderer.toneMapping = THREE.ACESFilmicToneMapping;
     }

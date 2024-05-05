@@ -15,7 +15,7 @@ export default function EngineSwitch({
   type: "checkbox" | "radio";
   name?: string;
   title: string;
-  checked: boolean;
+  checked?: boolean;
   getFlag?: (flag: boolean) => void;
   getChoice?: () => void;
 }) {
@@ -28,7 +28,7 @@ export default function EngineSwitch({
     <div className="flex items-center text-sm gap-2">
       <input className="cursor-pointer" id={id} type={type} name={name} checked={checked} onChange={handleChange} />
 
-      <label className="text-zinc-400" htmlFor={id}>
+      <label className="text-zinc-400 cursor-pointer" htmlFor={id}>
         {title}
       </label>
     </div>

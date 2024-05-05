@@ -7,11 +7,14 @@ import Engine from "@/components/engine/Engine";
 import EngineTopbar from "@/components/shared/EngineTopbar";
 import EngineBasicSidebar from "@/components/shared/EngineBasicSidebar";
 
-import { sidebarFlagImage } from "@/constant";
+import { lightPresets1, lightPresets2, lightPresets3, sidebarFlagImage } from "@/constant";
+import { LightType, SidebarType } from "@/types";
+import EngineLightSidebar from "@/components/shared/EngineLightSidebar";
 
 export default function EnginePage() {
-  const [sidebarFlag, setSidebarFlag] = useState<string>("B");
+  const [sidebarFlag, setSidebarFlag] = useState<SidebarType>("B");
 
+  // Basic settings
   const [path, setPath] = useState<string>(
     "https://sonarmeta.oss-cn-shenzhen.aliyuncs.com/public-assets/test-models/SK_Cartoon_Female_059/SK_Cartoon_Female_059.gltf"
   );
@@ -35,6 +38,11 @@ export default function EnginePage() {
   const [backgroundBlur, setBackgroundBlur] = useState<number>(0.5);
   const [backgroundIntensity, setBackgroundIntensity] = useState<number>(1);
 
+  // Light settings
+  const [lightFlag, setLightFlag] = useState<boolean>(false);
+  const [lightChoice, setLightChoice] = useState<1 | 2 | 3>(1);
+  const [lights, setLights] = useState<LightType[]>([lightPresets1, lightPresets2, lightPresets3]);
+
   return (
     <>
       <EngineTopbar />
@@ -46,12 +54,10 @@ export default function EnginePage() {
             {sidebarFlagImage.map((item) => (
               <div
                 className={`flex justify-center items-center w-[48px] h-[48px] ${
-                  sidebarFlag === item.flag ? "bg-[#486072]" : "bg-[#283236]"
-                } hover:bg-[#486072] border-b-[1px] ${
-                  item.flag !== "V" ? "border-r-[1px]" : ""
-                } border-zinc-500 duration-200 cursor-pointer`}
+                  sidebarFlag === item.flag ? "bg-zinc-700" : ""
+                } hover:bg-zinc-700 border-b-[1px] border-zinc-500 duration-200 cursor-pointer`}
                 key={item.flag}
-                onClick={() => setSidebarFlag(item.flag)}
+                onClick={() => setSidebarFlag(item.flag as SidebarType)}
               >
                 <Image src={item.path} alt="sidebarFlagImage" width={item.size} height={item.size} priority />
               </div>
@@ -97,6 +103,17 @@ export default function EnginePage() {
               getBackgroundIntensity={(intensity) => setBackgroundIntensity(intensity)}
             />
           )}
+
+          {sidebarFlag === "L" && (
+            <EngineLightSidebar
+              lightFlag={lightFlag}
+              lightChoice={lightChoice}
+              lights={lights}
+              getLightFlag={(flag) => setLightFlag(flag)}
+              getLightChoice={(choice) => setLightChoice(choice)}
+              getLights={(lights) => setLights(lights)}
+            />
+          )}
         </div>
 
         <Engine
@@ -116,6 +133,9 @@ export default function EnginePage() {
           backgroundEnv={backgroundEnv}
           backgroundBlur={backgroundBlur}
           backgroundIntensity={backgroundIntensity}
+          lightFlag={lightFlag}
+          lightChoice={lightChoice}
+          lights={lights}
         />
       </div>
     </>

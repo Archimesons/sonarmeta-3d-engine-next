@@ -21,6 +21,7 @@ import { rotateModelAnimate } from "@/utils/rotation";
 import { generateLineSegments, removeLineSegments } from "@/utils/wireframe";
 
 import { switchBackgroundChoice } from "@/utils/background";
+import { LightType } from "@/types";
 
 export default function Engine({
   path,
@@ -39,6 +40,9 @@ export default function Engine({
   backgroundEnv,
   backgroundBlur,
   backgroundIntensity,
+  lightFlag,
+  lightChoice,
+  lights,
 }: {
   path: string;
   auxiliaryFlag: boolean;
@@ -56,6 +60,9 @@ export default function Engine({
   backgroundEnv: number;
   backgroundBlur: number;
   backgroundIntensity: number;
+  lightFlag: boolean;
+  lightChoice: 1 | 2 | 3;
+  lights: LightType[];
 }) {
   const [progress, setProgress] = useState<number>(0);
   const [itemsLoaded, setItemsLoaded] = useState<number>(0);
@@ -135,6 +142,7 @@ export default function Engine({
 
         generateLineSegments({ wireframeOpacity, wireframeColor, geometry, node });
       } else {
+        modelGeometryList.current.forEach((geo) => geo.dispose());
         modelGeometryList.current = [];
         // if (animationList.length) node.material.wireframe = false;
 
@@ -170,8 +178,8 @@ export default function Engine({
       scene: scene.current,
       renderer: renderer.current,
       pmremGenerator: pmremGenerator.current,
-      bgImgIndex: backgroundImage,
-      bgEnvIndex: backgroundEnv,
+      backgroundImageIndex: backgroundImage,
+      backgroundEnvIndex: backgroundEnv,
     });
   }, [backgroundFlag, backgroundChoice, backgroundColor, backgroundImage, backgroundEnv]);
 
