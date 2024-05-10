@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function EngineColorInput({
   id,
@@ -14,6 +14,10 @@ export default function EngineColorInput({
   getColor: (color: string) => void;
 }) {
   const [color, setColor] = useState<string>(defaultValue);
+
+  useEffect(() => {
+    setColor(defaultValue);
+  }, [defaultValue]);
 
   return (
     <div className="flex justify-between items-center">

@@ -41,8 +41,8 @@ export default function EngineLightSidebar({
           {lights.map((light: LightType) => (
             <div
               key={light.index}
-              className={`flex justify-between items-center bg-zinc-700 hover:bg-zinc-600 ${
-                lightChoice === light.index ? "bg-zinc-600" : ""
+              className={`flex justify-between items-center hover:bg-zinc-600 ${
+                lightChoice === light.index ? "bg-zinc-600" : "bg-zinc-700"
               } duration-200 rounded cursor-pointer p-3`}
               onClick={() => getLightChoice(light.index)}
             >
@@ -101,6 +101,7 @@ export default function EngineLightSidebar({
                 getLights(lightsCopy);
               }}
             />
+
             <EngineSlider
               title="光源强度"
               min={0}

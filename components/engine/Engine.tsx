@@ -19,8 +19,16 @@ import { render, screenShot, toggleFullScreen, onCanvasResize } from "@/utils/co
 import { getModelFromLoader } from "@/utils/loader";
 import { rotateModelAnimate } from "@/utils/rotation";
 import { generateLineSegments, removeLineSegments } from "@/utils/wireframe";
+import { handleBackgroundConfig } from "@/utils/background";
+import {
+  attachLightControls,
+  detachLightControls,
+  initLight,
+  initLightControls,
+  modifyLight,
+  removeLight,
+} from "@/utils/light";
 
-import { switchBackgroundChoice } from "@/utils/background";
 import { LightType } from "@/types";
 
 export default function Engine({
@@ -80,8 +88,13 @@ export default function Engine({
   const orbitControls = useRef<OrbitControls | null>(null);
   const axesHelper = useRef<THREE.AxesHelper | null>(null);
   const gridHelper = useRef<THREE.GridHelper | null>(null);
-  const ambientLight = useRef<THREE.AmbientLight | null>(null);
   const pmremGenerator = useRef<THREE.PMREMGenerator | null>(null);
+
+  const lightList = useRef<THREE.Light[]>([]);
+  const lightHelperList = useRef<THREE.Object3D[]>([]);
+  const lightTranslateControlsList = useRef<TransformControls[]>([]);
+  const lightRotateControlsList = useRef<TransformControls[]>([]);
+  const ambientLight = useRef<THREE.AmbientLight | null>(null);
 
   // Mounted
   useEffect(() => {
@@ -171,7 +184,7 @@ export default function Engine({
 
   // Background switch watcher
   useEffect(() => {
-    switchBackgroundChoice({
+    handleBackgroundConfig({
       backgroundFlag,
       backgroundChoice,
       backgroundColor,
@@ -193,7 +206,107 @@ export default function Engine({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [backgroundBlur, backgroundIntensity]);
 
-  // Init the whole scene, this function can only be called once
+  // Light flag and choice watcher
+  useEffect(() => {
+    for (let i = 0; i < lights.length; i++) {
+      if (lightFlag) {
+        if (lights[i].type === "N") continue;
+
+        scene.current?.add(lightList.current[i]);
+        scene.current?.add(lightHelperList.current[i]);
+
+        if (i === lightChoice - 1)
+          attachLightControls({
+            lightRef: lightList.current[i],
+            lightTranslateControls: lightTranslateControlsList.current[i],
+            lightRotateControls: lightRotateControlsList.current[i],
+            scene: scene.current,
+          });
+        else
+          detachLightControls({
+            lightTranslateControls: lightTranslateControlsList.current[i],
+            lightRotateControls: lightRotateControlsList.current[i],
+            scene: scene.current,
+          });
+      } else
+        removeLight({
+          lightRef: lightList.current[i],
+          lightHelper: lightHelperList.current[i],
+          lightTranslateControls: lightTranslateControlsList.current[i],
+          lightRotateControls: lightRotateControlsList.current[i],
+          scene: scene.current,
+          camera: camera.current,
+        });
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lightFlag, lightChoice]);
+
+  // Light attributes watcher
+  useEffect(() => {
+    if (!lightFlag) return;
+
+    const index = lightChoice - 1;
+
+    modifyLight({
+      light: lights[index],
+      lightRef: lightList.current[index],
+      scene: scene.current,
+      camera: camera.current,
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lights]);
+
+  // Light type watcher
+  useEffect(
+    () => {
+      if (!lightFlag) return;
+
+      const index = lightChoice - 1;
+
+      // Store the original light position
+      const worldPosition = new THREE.Vector3();
+      lightList.current[index].getWorldPosition(worldPosition);
+
+      removeLight({
+        lightRef: lightList.current[index],
+        lightHelper: lightHelperList.current[index],
+        lightTranslateControls: lightTranslateControlsList.current[index],
+        lightRotateControls: lightRotateControlsList.current[index],
+        scene: scene.current,
+        camera: camera.current,
+      });
+
+      lightList.current[index].dispose(); // @ts-ignore
+      lightHelperList.current[index].dispose();
+
+      const { newLight, newLightHelper } = initLight({
+        light: lights[index],
+        scene: scene.current,
+        camera: camera.current,
+      });
+
+      if (!newLight || !newLightHelper) return;
+
+      newLight.position.set(worldPosition.x, worldPosition.y, worldPosition.z);
+
+      lightList.current[index] = newLight;
+      lightHelperList.current[index] = newLightHelper;
+
+      attachLightControls({
+        lightRef: lightList.current[index],
+        lightTranslateControls: lightTranslateControlsList.current[index],
+        lightRotateControls: lightRotateControlsList.current[index],
+        scene: scene.current,
+      });
+    },
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    lights.map((light) => light.type)
+  );
+
+  // Initialize the whole scene, this function can only be called once
   function init() {
     if (!htmlEleRef.current) return;
 
@@ -221,8 +334,28 @@ export default function Engine({
     orbitControls.current.dampingFactor = 0.09;
     orbitControls.current.update();
 
+    // Lights and controls
+    for (let i = 0; i < lights.length; i++) {
+      const { newLight, newLightHelper } = initLight({
+        light: lights[i],
+        scene: scene.current,
+        camera: camera.current,
+      });
+      if (newLight) lightList.current.push(newLight);
+      if (newLightHelper) lightHelperList.current.push(newLightHelper);
+
+      const { newLightTransformControls, newLightRotateControls } = initLightControls({
+        renderer: renderer.current,
+        camera: camera.current,
+        orbitControls: orbitControls.current,
+      });
+      if (newLightTransformControls) lightTranslateControlsList.current.push(newLightTransformControls);
+      if (newLightRotateControls) lightRotateControlsList.current.push(newLightRotateControls);
+    }
+
     // Ambient light
     ambientLight.current = new THREE.AmbientLight();
+    // scene.current.add(ambientLight.current);
 
     // Environment
     pmremGenerator.current = new THREE.PMREMGenerator(renderer.current);
@@ -254,7 +387,8 @@ export default function Engine({
 
   // Animate the scene as a loop
   function animate() {
-    orbitControls.current?.update();
+    orbitControls.current?.update(); // @ts-ignore
+    lightHelperList.current.forEach((helper) => helper.update());
     render({ scene: scene.current, camera: camera.current, renderer: renderer.current });
     requestAnimationFrame(animate);
   }

@@ -6,17 +6,17 @@ import Image from "next/image";
 import Engine from "@/components/engine/Engine";
 import EngineTopbar from "@/components/shared/EngineTopbar";
 import EngineBasicSidebar from "@/components/shared/EngineBasicSidebar";
+import EngineLightSidebar from "@/components/shared/EngineLightSidebar";
 
 import { lightPresets1, lightPresets2, lightPresets3, sidebarFlagImage } from "@/constant";
 import { LightType, SidebarType } from "@/types";
-import EngineLightSidebar from "@/components/shared/EngineLightSidebar";
 
 export default function EnginePage() {
   const [sidebarFlag, setSidebarFlag] = useState<SidebarType>("B");
 
   // Basic settings
   const [path, setPath] = useState<string>(
-    "https://sonarmeta.oss-cn-shenzhen.aliyuncs.com/public-assets/test-models/SK_Cartoon_Female_059/SK_Cartoon_Female_059.gltf"
+    "https://sonarmeta.oss-cn-shenzhen.aliyuncs.com/public-assets/preloaded-model/phoenix_bird.glb"
   );
   const [rotateStatus, setRotateStatus] = useState<{ axis: "X" | "Y" | "Z"; side: 0 | 1; flag: boolean }>({
     axis: "X",

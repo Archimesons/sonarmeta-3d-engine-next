@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 
 export default function EngineSlider({
   title,
@@ -18,6 +18,10 @@ export default function EngineSlider({
   getValue: (val: number) => void;
 }) {
   const [value, setValue] = useState<number>(defaultValue);
+
+  useEffect(() => {
+    setValue(defaultValue);
+  }, [defaultValue]);
 
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     let val = Number(e.target.value);

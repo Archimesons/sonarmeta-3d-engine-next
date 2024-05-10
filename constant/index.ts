@@ -135,6 +135,7 @@ export const lightPresets1: LightType = {
   attachedToCamera: false,
   castShadow: false,
   shadowBias: 0.2659,
+  position: { x: 2, y: 2, z: 2 },
 };
 export const lightPresets2: LightType = {
   index: 2,
@@ -149,6 +150,7 @@ export const lightPresets2: LightType = {
   attachedToCamera: false,
   castShadow: false,
   shadowBias: 0.2659,
+  position: { x: -2, y: -2, z: -2 },
 };
 export const lightPresets3: LightType = {
   index: 3,
@@ -158,9 +160,10 @@ export const lightPresets3: LightType = {
   intensity: 0.8553,
   visible: true,
   decay: 0.5,
-  angle: 45,
+  angle: 25,
   penumbra: 0.5,
   attachedToCamera: false,
   castShadow: false,
   shadowBias: 0.2659,
+  position: { x: -2, y: 2, z: 2 },
 };

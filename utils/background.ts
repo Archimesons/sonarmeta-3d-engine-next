@@ -3,7 +3,7 @@ import { EXRLoader } from "three/examples/jsm/loaders/EXRLoader";
 
 import { backgroundTransparentImage, preloadedBackgroundImages, preloadedEnvImages } from "@/constant";
 
-export function switchBackgroundChoice({
+export function handleBackgroundConfig({
   backgroundFlag,
   backgroundChoice,
   backgroundColor,
@@ -29,24 +29,16 @@ export function switchBackgroundChoice({
   // If background is enabled
   if (backgroundFlag) {
     // Color mode
-    if (backgroundChoice === "C") {
-      scene.background = new THREE.Color(backgroundColor);
-      // renderer.toneMapping = THREE.NoToneMapping;
-    }
-
+    if (backgroundChoice === "C") scene.background = new THREE.Color(backgroundColor);
     // Image mode
-    else if (backgroundChoice === "I") {
+    else if (backgroundChoice === "I")
       scene.background = new THREE.TextureLoader().load(preloadedBackgroundImages[backgroundImageIndex].path);
-      // renderer.toneMapping = THREE.NoToneMapping;
-    }
-
     // Environment mode
     else if (backgroundChoice === "E") {
       new EXRLoader().load(preloadedEnvImages[backgroundEnvIndex].path, (texture) => {
         const target = pmremGenerator?.fromEquirectangular(texture);
         if (target) scene.background = target.texture;
       });
-      // renderer.toneMapping = THREE.ACESFilmicToneMapping;
     }
   }
 

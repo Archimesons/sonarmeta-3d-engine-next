@@ -12,14 +12,15 @@ export type LightType = {
   name: LightNameType;
   color: string;
   intensity: number;
-  visible: boolean;
   decay: number;
   angle: number;
   penumbra: number;
   attachedToCamera: boolean;
   castShadow: boolean;
   shadowBias: number;
+  position: { x: number; y: number; z: number };
+  visible: boolean;
 };
 
-type LightTypeType = "D" | "P" | "S" | "H" | "N";
+export type LightTypeType = "D" | "P" | "S" | "H" | "N";
 type LightNameType = "平行光" | "点光" | "聚光" | "半球光" | "禁用";
